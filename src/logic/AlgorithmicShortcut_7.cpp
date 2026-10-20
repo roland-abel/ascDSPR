@@ -5,7 +5,7 @@
     acceptance_result AlgorithmicShortcut_7::try_solve(AF &framework, uint32_t query_argument)
     {
         // check if q attacks any other argument
-        if(framework.victims[query_argument].size() == 0){
+        if(framework.victims[query_argument].empty()){
             return acceptance_result::unknown;
         }
 
@@ -16,7 +16,7 @@
 
         // create clause of the victims of q
         vector<int64_t> clause_victims;
-        vector<uint32_t> victims = framework.victims[query_argument];
+        const vector<uint32_t> &victims = framework.victims[query_argument];
 		for (std::vector<unsigned int>::size_type i = 0; i < victims.size(); i++)
 		{
             uint32_t victim = victims[i];

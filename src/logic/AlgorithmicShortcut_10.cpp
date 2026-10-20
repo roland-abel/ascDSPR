@@ -38,7 +38,7 @@
 
     void AlgorithmicShortcut_10::create_clauses_self_defense(AF &framework, SatSolver &solver)
     {
-        vector<uint32_t> set_self_defending_arguments = get_set_self_defending_arguments(framework);
+        const vector<uint32_t> &set_self_defending_arguments = get_set_self_defending_arguments(framework);
 
         for(uint32_t i = 0; i < set_self_defending_arguments.size(); i++)
         {
@@ -63,7 +63,7 @@
                 continue;
             }
 
-            vector<uint32_t> attackers = framework.attackers[argument];
+            const vector<uint32_t> &attackers = framework.attackers[argument];
             bool is_self_defending = true;
             for (uint32_t j = 0; j < framework.attackers[argument].size(); j++)
             {

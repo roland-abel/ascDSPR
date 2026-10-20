@@ -105,7 +105,7 @@ void Encoding::add_clauses_nonempty_admissible(SatSolver &solver, AF &framework)
 		vector<int64_t> legal_out_clause = add_clauses_nonempty_admissible_set_part_one(solver, framework, non_empty_clause, argument);
 
 		//////////////////////////////////////// FOR ALL ATTACKERS /////////////////////////////////////////////////////////
-		vector<uint32_t> attackers = framework.attackers[argument];
+		const vector<uint32_t> &attackers = framework.attackers[argument];
 		for (std::vector<unsigned int>::size_type j = 0; j < attackers.size(); j++)
 		{
 			uint32_t attacker = attackers[j];
@@ -157,7 +157,7 @@ void Encoding::add_clauses_nonempty_complete(SatSolver &solver, AF &framework)
 		vector<int64_t> legal_undec_out_clause = create_clause_legal_undec_out(argument);
 
 		//////////////////////////////////////// FOR ALL ATTACKERS /////////////////////////////////////////////////////////
-		vector<uint32_t> attackers = framework.attackers[argument];
+		const vector<uint32_t> &attackers = framework.attackers[argument];
 		for (std::vector<unsigned int>::size_type j = 0; j < attackers.size(); j++)
 		{
 			uint32_t attacker = attackers[j];
