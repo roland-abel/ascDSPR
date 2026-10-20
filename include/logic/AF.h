@@ -74,7 +74,7 @@ public:
 	/// This method creates an ArrayBitSet containing all arguments of this framework.
 	/// </summary>
 	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
-	ArrayBitSet create_active_arguments();
+	ArrayBitSet create_active_arguments() const;
 	/// <summary>
 	/// Deletes an attack of the instance.
 	/// </summary>

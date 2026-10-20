@@ -43,7 +43,7 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 		for (std::vector<unsigned int>::size_type i = 0; i < framework.victims[ua].size(); i++) {
 			uint32_t vua = framework.victims[ua][i];
 			//only account victims that are still active
-			if (!reduct._bitset[vua]) {
+			if (!reduct.contains(vua)) {
 				continue;
 			}
 			//check if query gets attacked by argument of grounded extension, if query == 0 then there is no query argument to check for
@@ -59,7 +59,7 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 			for (std::vector<unsigned int>::size_type j = 0; j < framework.victims[vua].size(); j++) {
 				uint32_t vvua = framework.victims[vua][j];
 				//only account victims of victims that are still active
-				if (!reduct._bitset[vvua]) {
+				if (!reduct.contains(vvua)) {
 					continue;
 				}
 
@@ -75,7 +75,7 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 		}
 
 		//reduce active argument by unattacked argument + update current reduct
-		reduct = Reduct::get_reduct(reduct, framework, ua);
+		Reduct::reduce(reduct, framework, ua);
 	}
 
 	return grounded_extension;

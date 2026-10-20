@@ -12,15 +12,13 @@ using namespace std;
 /// </summary>
 class ArrayBitSet {
 public:
-    /// <summary>
-    /// Array of fixed length, used for iterating through the contained elements.
-    /// </summary>
-    std::vector<uint32_t> _array;
-
-    /// <summary>
-    /// Bitset of fixed length, used for existence checks of an element.
-    /// </summary>
-    std::vector<uint8_t> _bitset;
+    explicit ArrayBitSet(uint32_t max_arguments)
+        : _max_arguments(max_arguments),
+          _size(0),
+          _array(max_arguments),
+          _bitset(static_cast<std::size_t>(max_arguments) + 1, 0),
+          _positions(static_cast<std::size_t>(max_arguments) + 1, 0) {
+    }
 
     ArrayBitSet(const ArrayBitSet&) = default;
 
@@ -32,25 +30,88 @@ public:
 
     ~ArrayBitSet() = default;
 
-    ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset)
-        : _array(std::move(new_array)), _bitset(std::move(new_bitset)) {
+    bool insert(uint32_t argument) {
+        if (argument == 0
+            || argument > _max_arguments
+            || _bitset[argument] != 0
+            || _size >= _max_arguments) {
+            return false;
+        }
+
+        _bitset[argument] = 1;
+        _positions[argument] = _size;
+        _array[_size] = argument;
+        ++_size;
+
+        return true;
+    }
+
+    bool remove(uint32_t argument) {
+        if (argument == 0
+            || argument > _max_arguments
+            || _bitset[argument] == 0) {
+            return false;
+        }
+
+        _bitset[argument] = 0;
+
+        const uint32_t position = _positions[argument];
+        const uint32_t last_position = _size - 1;
+
+        if (position != last_position) {
+            const uint32_t last_argument = _array[last_position];
+            _array[position] = last_argument;
+            _positions[last_argument] = position;
+        }
+
+        --_size;
+        return true;
+    }
+
+    [[nodiscard]] bool contains(uint32_t argument) const {
+        return argument != 0
+            && argument <= _max_arguments
+            && _bitset[argument] != 0;
     }
 
     [[nodiscard]] bool empty() const {
-        return _array.empty();
-    }
-
-    [[nodiscard]] bool contains(uint32_t index) const {
-        return _bitset[index];
+        return _size == 0;
     }
 
     /// <summary>
     /// Frees the space of this instance, but not of its elements.
     /// </summary>
-    void clear() noexcept {
-        _bitset.clear();
-        _array.clear();
+    void clear() {
+        std::fill(_bitset.begin(), _bitset.end(), 0);
+        _size = 0;
     }
+
+    using const_iterator = std::vector<uint32_t>::const_iterator;
+
+    [[nodiscard]] const_iterator begin() const {
+        return _array.cbegin();
+    }
+
+    [[nodiscard]] const_iterator end() const {
+        return _array.cbegin() + _size;
+    }
+
+private:
+    uint32_t _max_arguments{};
+
+    uint32_t _size{};
+
+    /// <summary>
+    /// Array of fixed length, used for iterating through the contained elements.
+    /// </summary>
+    std::vector<uint32_t> _array{};
+
+    /// <summary>
+    /// Bitset of fixed length, used for existence checks of an element.
+    /// </summary>
+    std::vector<uint8_t> _bitset{};
+
+    std::vector<uint32_t> _positions{};
 };
 
 #endif

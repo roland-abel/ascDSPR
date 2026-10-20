@@ -30,17 +30,15 @@ void AF::clear() {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-ArrayBitSet AF::create_active_arguments() {
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset(num_args + 1, 1);
-	active_args_bitset[0] = false;
+ArrayBitSet AF::create_active_arguments() const {
+	ArrayBitSet active_arguments(num_args);
 
-	//iterate through the arguments to append them to the vector
-	for (std::vector<unsigned int>::size_type i = 0; i < num_args; i++) {
-		active_args_vector.push_back(i + 1);
+	//iterate through the arguments to append them to the argument set
+	for (uint32_t i = 0; i < num_args; ++i) {
+		active_arguments.insert(i + 1);
 	}
 
-	return ArrayBitSet(active_args_vector, active_args_bitset);
+	return active_arguments;
 }
 
 /*===========================================================================================================================================================*/
