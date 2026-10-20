@@ -28,11 +28,6 @@ public:
 
     ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset) : _array{ new_array }, _bitset{ new_bitset } {}
 
-    ~ArrayBitSet() {
-        _bitset.clear();
-        _array.clear();
-    }
-
     /// <summary>
     /// Frees the space of this instance, but not of its elements.
     /// </summary>
