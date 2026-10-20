@@ -1,5 +1,6 @@
 #ifdef ASC_7
     #include "../../include/logic/AlgorithmicShortcut_7.h"
+    #include <memory>
 
     acceptance_result AlgorithmicShortcut_7::try_solve(AF &framework, uint32_t query_argument)
     {
@@ -9,8 +10,7 @@
         }
 
         // initialize SATSolver
-        SatSolver *solver = NULL;
-        solver = new SatSolver();
+        const auto solver = std::make_unique<SatSolver>();
         // add encoding for nonempty complete labeling to the SATSolver
         Encoding::add_clauses_nonempty_complete(*solver, framework);
 
@@ -22,10 +22,10 @@
             uint32_t victim = victims[i];
             clause_victims.push_back(Encoding::get_literal_accepted(victim, true));
         }
-        (*solver).add_clause(clause_victims);
+        solver->add_clause(clause_victims);
 
         // ask SAT solver if a nonempty complete labeling lab exists, so that lab(q) = OUT
-        bool exists_complete_labeling = (*solver).solve();
+        bool exists_complete_labeling = solver->solve();
 
         if(exists_complete_labeling){
             return acceptance_result::rejected;

@@ -1,6 +1,6 @@
 #ifdef ASC_8
     #include "../../include/logic/AlgorithmicShortcut_8.h"
-#include "AlgorithmicShortcut_8.h"
+    #include <memory>
 
 acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query_argument)
 {
@@ -23,8 +23,7 @@ acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query
     }
 
     // initialize SATSolver
-    SatSolver *solver = NULL;
-    solver = new SatSolver();
+    const auto solver = std::make_unique<SatSolver>();
     // add encoding for nonempty complete labeling to the SATSolver
     Encoding::add_clauses_nonempty_complete(*solver, framework);
 

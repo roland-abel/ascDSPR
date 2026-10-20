@@ -1,16 +1,16 @@
 #ifdef ASC_5
     #include "../../include/logic/AlgorithmicShortcut_5.h"
+    #include <memory>
 
     acceptance_result AlgorithmicShortcut_5::try_solve(AF &framework, uint32_t query_argument)
     {
         // initialize SATSolver
-        SatSolver *solver = NULL;
-        solver = new SatSolver();
+        const auto solver = std::make_unique<SatSolver>();
         // add encoding for nonempty complete labeling to the SATSolver
         Encoding::add_clauses_nonempty_complete(*solver, framework);
         // ask SAT solver if a nonempty complete labeling lab exists, so that lab(q) = IN
-        (*solver).add_clause_short(Encoding::get_literal_accepted(query_argument, true), 0);
-        bool exists_complete_labeling = (*solver).solve();
+        solver->add_clause_short(Encoding::get_literal_accepted(query_argument, true), 0);
+        bool exists_complete_labeling = solver->solve();
 
         if(exists_complete_labeling){
             return acceptance_result::unknown;
