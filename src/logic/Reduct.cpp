@@ -30,7 +30,7 @@ ArrayBitSet Reduct::get_reduct_set(ArrayBitSet &activeArguments, AF &framework, 
 {
 	if (set_arguments.empty()) {
 		cout << "get_reduct_set:: set of arguments is empty get_reduct_set" << endl;
-		throw new exception;
+		throw exception();
 	}
 
 	// reduce the framework by the first argument of the set
