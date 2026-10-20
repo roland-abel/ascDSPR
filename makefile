@@ -83,7 +83,7 @@ CPPFLAGS := $(INC_FLAGS) $(INC_FLAGS_SOLVER) -MMD -MP
 
 .PHONY:	all
 all: CXXFLAGS += -DNDEBUG -O3 
-all: CCFLAGS += -DNDEBUG -O3 
+all: CFLAGS += -DNDEBUG -O3 
 all: $(BUILD_DIR)/$(TARGET)_ASC$(ASC)
 
 .PHONY: clean
@@ -92,7 +92,7 @@ clean:
 
 .PHONY: debug
 debug: CXXFLAGS += -DDEBUG -g -O0
-debug: CCFLAGS += -DDEBUG -g -O0
+debug: CFLAGS += -DDEBUG -g -O0
 debug: $(BUILD_DIR)/$(TARGET)_ASC$(ASC)
 
 #--------------------------------------------------------------------------#
