@@ -16,6 +16,7 @@
 
         private:
             static void create_clauses(AF &framework, uint32_t query_argument, SatSolver &solver);
+            static bool check_only_self_attack(AF &framework, uint32_t query_argument);
             static bool check_each_attacker_has_defender(AF &framework, uint32_t query_argument);
         };
     #endif
