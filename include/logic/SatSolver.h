@@ -20,6 +20,10 @@ public:
 
 	~SatSolver();
 
+	SatSolver(const SatSolver&) = delete;
+
+	SatSolver& operator=(const SatSolver&) = delete;
+
 	/// <summary>
 	/// Adds a new clause to the SAT-problem of the solver. This method is used to define the propositional formula of the SatSolver, which is formulated in conjunctive normal form.
 	/// </summary>
