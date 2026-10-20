@@ -4,7 +4,8 @@
 #include <vector>
 #include <unordered_set>
 #include <cstdint>
-#include <iostream>	
+#include <iostream>
+#include <list>
 #include <omp.h>
 
 #include "../util/ArrayBitSet.h"

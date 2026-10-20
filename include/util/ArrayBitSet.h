@@ -2,36 +2,52 @@
 #define ARRAY_BITSET_H
 
 #include <vector>
-#include <cstdint>
 #include <algorithm>
 #include <iterator>
-#include <list>
 
 using namespace std;
 
 /// <summary>
-/// This class is realizes a combined data structure of an array and a bitset.
+/// This class realizes a combined data structure of an array and a bitset.
 /// </summary>
 class ArrayBitSet {
-
 public:
     /// <summary>
     /// Array of fixed length, used for iterating through the contained elements.
     /// </summary>
     std::vector<uint32_t> _array;
+
     /// <summary>
-    /// Bitset of fixed length, used for existance checks of an element.
+    /// Bitset of fixed length, used for existence checks of an element.
     /// </summary>
     std::vector<uint8_t> _bitset;
 
-    ArrayBitSet() {}
+    ArrayBitSet(const ArrayBitSet&) = default;
 
-    ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset) : _array{ new_array }, _bitset{ new_bitset } {}
+    ArrayBitSet& operator=(const ArrayBitSet&) = default;
+
+    ArrayBitSet(ArrayBitSet&&) noexcept = default;
+
+    ArrayBitSet& operator=(ArrayBitSet&&) noexcept = default;
+
+    ~ArrayBitSet() = default;
+
+    ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset)
+        : _array(std::move(new_array)), _bitset(std::move(new_bitset)) {
+    }
+
+    [[nodiscard]] bool empty() const {
+        return _array.empty();
+    }
+
+    [[nodiscard]] bool contains(uint32_t index) const {
+        return _bitset[index];
+    }
 
     /// <summary>
     /// Frees the space of this instance, but not of its elements.
     /// </summary>
-    void clear() {
+    void clear() noexcept {
         _bitset.clear();
         _array.clear();
     }
