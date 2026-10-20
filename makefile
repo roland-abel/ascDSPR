@@ -47,7 +47,7 @@ INCLUDE			=	./include/
 CC	=	gcc
 CFLAGS	?=	-Wall -std=c11
 CXX = g++
-CXXFLAGS ?= -Wall -std=c++11 -D ASC_${ASC}
+CXXFLAGS ?= -Wall -std=c++17 -D ASC_${ASC}
 LDFLAGS ?= -L$(IPASIRLIBDIR)
 LDLIBS ?= -l$(IPASIRSOLVER)
 
