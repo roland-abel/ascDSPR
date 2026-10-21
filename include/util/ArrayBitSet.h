@@ -14,7 +14,6 @@ class ArrayBitSet {
 public:
     explicit ArrayBitSet(uint32_t max_arguments)
         : _max_arguments(max_arguments),
-          _size(0),
           _array(max_arguments),
           _bitset(static_cast<std::size_t>(max_arguments) + 1, 0),
           _positions(static_cast<std::size_t>(max_arguments) + 1, 0) {
