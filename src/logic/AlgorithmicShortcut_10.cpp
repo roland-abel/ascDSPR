@@ -10,7 +10,7 @@
         Encoding::add_clauses_nonempty_complete(*solver, framework);
 
         // check if there is at least one nonempty complete labeling
-        bool exists_complete_labeling = (*solver).solve();
+        bool exists_complete_labeling = solver->solve();
         if (!exists_complete_labeling)
         {
             return acceptance_result::unknown;

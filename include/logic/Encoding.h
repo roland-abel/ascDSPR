@@ -1,14 +1,8 @@
 #ifndef ENCODINGS_SATSOLVER_H
 #define ENCODINGS_SATSOLVER_H
 
-#include <cstdint>
-#include <vector>
-#include <unordered_set>
-
 #include "AF.h"
 #include "SatSolver.h"
-
-#include "../util/Printer.h"
 
 
 using namespace std;

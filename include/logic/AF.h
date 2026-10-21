@@ -4,34 +4,11 @@
 #include <vector>
 #include <unordered_set>
 #include <cstdint>
-#include <iostream>
 #include <list>
 #include <span>
-#include <cstddef>
 #include <cassert>
 
 #include "../util/ArrayBitSet.h"
-
-template <class T>
-inline void hash_combine(std::size_t &seed, const T &v)
-{
-	std::hash<T> hasher;
-	seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
-namespace std
-{
-	template<typename S, typename T> struct hash<pair<S, T>>
-	{
-		inline size_t operator()(const pair<S, T> &v) const
-		{
-			size_t seed = 0;
-			::hash_combine(seed, v.first);
-			::hash_combine(seed, v.second);
-			return seed;
-		}
-	};
-}
 
 /// <summary>
 /// This class is responsible for representing the data of an abstract argumentation framework.
@@ -45,44 +22,58 @@ class AF {
     /// Lists for each argument a list of the arguments, attacking it.
     /// </summary>
     std::vector<vector<uint32_t>> _attackers{};
-	/// <summary>
-	/// Lists for each argument a list of the arguments, which are attacked by it.
-	/// </summary>
-	std::vector<vector<uint32_t>> _victims{};
-	/// <summary>
-	/// Booleans indicating if an argument attacks itself.
-	/// </summary>
-	std::vector<uint8_t> _self_attack{};
+    /// <summary>
+    /// Lists for each argument a list of the arguments, which are attacked by it.
+    /// </summary>
+    std::vector<vector<uint32_t>> _victims{};
+    /// <summary>
+    /// Booleans indicating if an argument attacks itself.
+    /// </summary>
+    std::vector<uint8_t> _self_attack{};
     /// <summary>
     /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
     /// </summary>
-    std::unordered_set<std::pair<uint32_t, uint32_t>> _attacks{};
+    // (attacker << 32) | victim - HI: attacker / LO: victim
+    std::unordered_set<std::uint64_t> _attacks{};
 
 public:
-	[[nodiscard]] uint32_t num_args() const noexcept {
-		return _num_args;
-	}
+    [[nodiscard]] static constexpr uint64_t pack_attack(uint32_t attacker, uint32_t victim) noexcept {
+        return (static_cast<uint64_t>(attacker) << 32)
+            | static_cast<uint64_t>(victim);
+    }
 
-	[[nodiscard]] std::span<const uint32_t> attackers(uint32_t argument) const noexcept {
-		assert(argument <= _num_args);
-		const auto &list = _attackers[argument];
-		return {list.data(), list.size()};
-	}
+    [[nodiscard]] static constexpr uint32_t unpack_attacker(uint64_t attack) noexcept {
+        return static_cast<uint32_t>(attack >> 32);
+    }
 
-	[[nodiscard]] const std::unordered_set<std::pair<uint32_t, uint32_t>>& attacks() const noexcept {
-		return _attacks;
-	}
+    [[nodiscard]] static constexpr uint32_t unpack_victim(uint64_t attack) noexcept {
+        return static_cast<uint32_t>(attack & 0xFFFFFFFFULL);
+    }
 
-	[[nodiscard]] std::span<const uint32_t> victims(uint32_t argument) const noexcept {
-		assert(argument <= _num_args);
-		const auto &list = _victims[argument];
-		return {list.data(), list.size()};
-	}
+    [[nodiscard]] uint32_t num_args() const noexcept {
+        return _num_args;
+    }
 
-	[[nodiscard]] bool self_attack(uint32_t argument) const noexcept {
-		assert(argument <= _num_args);
-		return _self_attack[argument] != 0;
-	}
+    [[nodiscard]] std::span<const uint32_t> attackers(uint32_t argument) const noexcept {
+        assert(argument <= _num_args);
+        const auto& list = _attackers[argument];
+        return {list.data(), list.size()};
+    }
+
+    [[nodiscard]] const std::unordered_set<std::uint64_t>& attacks() const noexcept {
+        return _attacks;
+    }
+
+    [[nodiscard]] std::span<const uint32_t> victims(uint32_t argument) const noexcept {
+        assert(argument <= _num_args);
+        const auto& list = _victims[argument];
+        return {list.data(), list.size()};
+    }
+
+    [[nodiscard]] bool self_attack(uint32_t argument) const noexcept {
+        assert(argument <= _num_args);
+        return _self_attack[argument] != 0;
+    }
 
     /// <summary>
     /// Adds an attack to the instance.
@@ -91,47 +82,47 @@ public:
     /// <param name="victim">The argument which is been attacked by the other.</param>
     /// <returns>TRUE iff the attack was successfully added.</returns>
     bool add_attack(uint32_t attacker, uint32_t victim);
-	/// <summary>
-	/// This method deletes the data structure of the instance.
-	/// </summary>
-	void clear();
-	/// <summary>
-	/// This method creates an ArrayBitSet containing all arguments of this framework.
-	/// </summary>
-	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
-	ArrayBitSet create_active_arguments() const;
-	/// <summary>
-	/// Deletes an attack of the instance.
-	/// </summary>
-	/// <param name="attacker">The argument which is attacking the other.</param>
-	/// <param name="victim">The argument which is been attacked by the other.</param>
-	/// <returns>TRUE iff the attack was successfully deleted.</returns>
-	bool delete_attack(uint32_t attacker, uint32_t victim);
     /// <summary>
-    /// This method checks if there's an attack from the first to the second specified 
+    /// This method deletes the data structure of the instance.
+    /// </summary>
+    void clear();
+    /// <summary>
+    /// This method creates an ArrayBitSet containing all arguments of this framework.
+    /// </summary>
+    /// <returns>An ArrayBitSet of all arguments in this framework.</returns>
+    ArrayBitSet create_active_arguments() const;
+    /// <summary>
+    /// Deletes an attack of the instance.
+    /// </summary>
+    /// <param name="attacker">The argument which is attacking the other.</param>
+    /// <param name="victim">The argument which is been attacked by the other.</param>
+    /// <returns>TRUE iff the attack was successfully deleted.</returns>
+    bool delete_attack(uint32_t attacker, uint32_t victim);
+    /// <summary>
+    /// This method checks if there's an attack from the first to the second specified
 	/// argument.
     /// </summary>
     /// <param name="attacker">The argument which is attacking the other.</param>
     /// <param name="victim">The argument which is been attacked by the other.</param>
     /// <returns>TRUE iff there is an attack.</returns>
     bool exists_attack(uint32_t attacker, uint32_t victim) const;
-	/// <summary>
-	/// Checks if a specified argument gets attacked by any member of the specified set of arguments.
-	/// </summary>
-	/// <param name="argument">An argument of the framework.</param>
-	/// <param name="set_arguments">Set of arguments of the framework.</param>
-	/// <returns>TRUE iff any member of the set attacks the specified argument. FALSE otherwise.</returns>
-	bool exists_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments) const;
+    /// <summary>
+    /// Checks if a specified argument gets attacked by any member of the specified set of arguments.
+    /// </summary>
+    /// <param name="argument">An argument of the framework.</param>
+    /// <param name="set_arguments">Set of arguments of the framework.</param>
+    /// <returns>TRUE iff any member of the set attacks the specified argument. FALSE otherwise.</returns>
+    bool exists_attack(std::uint32_t argument, std::list<std::uint32_t>& set_arguments) const;
     /// <summary>
     /// This method signals the instance, that it has all necessary information to finish
 	/// the initialization process.
     /// </summary>
     void finish_initilization();
-	/// <summary>
-	/// This method starts the initialization process on this instance.
-	/// </summary>
-	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
-	void initialize(uint32_t number_args);
+    /// <summary>
+    /// This method starts the initialization process on this instance.
+    /// </summary>
+    /// <param name="number_args">The number of arguments in the framework to initialize.</param>
+    void initialize(uint32_t number_args);
 };
 
 #endif
