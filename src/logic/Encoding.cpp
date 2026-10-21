@@ -18,7 +18,7 @@ int64_t Encoding::get_literal_accepted(uint32_t argument, bool isPositive)
 
 int64_t Encoding::get_literal_rejected(AF &framework, uint32_t argument, bool isPositive)
 {
-	int64_t variable = static_cast<int64_t>(argument) + framework.num_args;
+	int64_t variable = static_cast<int64_t>(argument) + framework.num_args();
 	return isPositive ? variable : -1 * variable;
 }
 
@@ -29,7 +29,7 @@ int64_t Encoding::get_literal_aux(AF &framework, uint32_t index, bool isPositive
 {
 	// use offset (2 * framework.num_args), because all arguments are decoded as [1 ... framework.num_args], hence all positive literals are decoded same as the arguments
     // while all negative literals are decoded as [(framework.num_args + 1) ... (framework.num_args + framework.num_args)]. Therefore use space above neg. literals.
-	int64_t variable = static_cast<int64_t>(index) + 2 * framework.num_args + 1;
+	int64_t variable = static_cast<int64_t>(index) + 2 * framework.num_args() + 1;
 	return isPositive ? variable : -1 * variable;
 }
 
@@ -100,12 +100,12 @@ void Encoding::add_clauses_nonempty_admissible(SatSolver &solver, AF &framework)
 	vector<int64_t> non_empty_clause;
 
 	//////////////////////////////////////// FOR ALL ARGUMENTS /////////////////////////////////////////////////////////
-	for (std::vector<unsigned int>::size_type i = 0; i < framework.num_args; i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < framework.num_args(); i++) {
 		uint32_t argument = i + 1;
 		vector<int64_t> legal_out_clause = add_clauses_nonempty_admissible_set_part_one(solver, framework, non_empty_clause, argument);
 
 		//////////////////////////////////////// FOR ALL ATTACKERS /////////////////////////////////////////////////////////
-		const vector<uint32_t> &attackers = framework.attackers[argument];
+		const span<const uint32_t> &attackers = framework.attackers(argument);
 		for (std::vector<unsigned int>::size_type j = 0; j < attackers.size(); j++)
 		{
 			uint32_t attacker = attackers[j];
@@ -151,13 +151,13 @@ void Encoding::add_clauses_nonempty_complete(SatSolver &solver, AF &framework)
 	vector<int64_t> non_empty_clause;
 
 	//////////////////////////////////////// FOR ALL ARGUMENTS /////////////////////////////////////////////////////////
-	for (std::vector<unsigned int>::size_type i = 0; i < framework.num_args; i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < framework.num_args(); i++) {
 		uint32_t argument = i + 1;
 		vector<int64_t> legal_out_clause = add_clauses_nonempty_admissible_set_part_one(solver, framework, non_empty_clause, argument);
 		vector<int64_t> legal_undec_out_clause = create_clause_legal_undec_out(argument);
 
 		//////////////////////////////////////// FOR ALL ATTACKERS /////////////////////////////////////////////////////////
-		const vector<uint32_t> &attackers = framework.attackers[argument];
+		const span<const uint32_t> &attackers = framework.attackers(argument);
 		for (std::vector<unsigned int>::size_type j = 0; j < attackers.size(); j++)
 		{
 			uint32_t attacker = attackers[j];

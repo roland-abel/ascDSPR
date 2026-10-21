@@ -5,7 +5,7 @@
 acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query_argument)
 {
     // check if there is at least one attacker of q
-    if (framework.attackers[query_argument].empty())
+    if (framework.attackers(query_argument).empty())
     {
         return acceptance_result::unknown;
     }
@@ -48,7 +48,7 @@ acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query
 
     bool AlgorithmicShortcut_8::check_only_self_attack(AF &framework, uint32_t query_argument)
     {
-        const vector<uint32_t> &attackers = framework.attackers[query_argument];
+        const span<const uint32_t> &attackers = framework.attackers(query_argument);
 
         // if unattacked then no self-attack possible
         if(attackers.empty()) return false;
@@ -63,11 +63,11 @@ acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query
 
     bool AlgorithmicShortcut_8::check_each_attacker_has_defender(AF &framework, uint32_t query_argument)
     {
-        const vector<uint32_t> &attackers = framework.attackers[query_argument];
+        const span<const uint32_t> &attackers = framework.attackers(query_argument);
         for (std::vector<unsigned int>::size_type i = 0; i < attackers.size(); i++)
         {
             uint32_t attacker = attackers[i];
-            if(framework.attackers[attacker].empty())
+            if(framework.attackers(attacker).empty())
             {
                 return false;
             }
@@ -84,7 +84,7 @@ acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query
         // disjunction of all additional z values
         vector<int64_t> clause_all_z;
         // for each attacker do
-        const vector<uint32_t> &attackers = framework.attackers[query_argument];
+        const span<const uint32_t> &attackers = framework.attackers(query_argument);
         for(uint32_t i = 0; i < attackers.size(); i++)
         {
             uint32_t attacker = attackers[i];
@@ -93,7 +93,7 @@ acceptance_result AlgorithmicShortcut_8::try_solve(AF &framework, uint32_t query
             clause_all_z.push_back(Encoding::get_literal_aux(framework, i, true));
 
             // for each defender against this attacker do
-            const vector<uint32_t> &defenders = framework.attackers[attacker];
+            const span<const uint32_t> &defenders = framework.attackers(attacker);
             for(uint32_t j = 0; j < defenders.size(); j++)
             {
                 uint32_t defender = defenders[j];

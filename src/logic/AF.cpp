@@ -10,10 +10,10 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 	if (attacker == 0 || victim == 0) return false;
 	
 	//check if attack is already contained
-	if (attacks.count(make_pair(attacker, victim))) {
+	if (_attacks.count(make_pair(attacker, victim))) {
 		return false;
 	}
-	attacks.insert(make_pair(attacker, victim));
+	_attacks.insert(make_pair(attacker, victim));
 	return true;
 }
 
@@ -21,20 +21,22 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 /*===========================================================================================================================================================*/
 
 void AF::clear() {
-	attacks.clear();
-	attackers.clear();
-	victims.clear();
-	self_attack.clear();
+	_attacks.clear();
+	_attackers.clear();
+	_victims.clear();
+	_self_attack.clear();
+
+	_num_args = 0;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
 ArrayBitSet AF::create_active_arguments() const {
-	ArrayBitSet active_arguments(num_args);
+	ArrayBitSet active_arguments(_num_args);
 
 	//iterate through the arguments to append them to the argument set
-	for (uint32_t i = 0; i < num_args; ++i) {
+	for (uint32_t i = 0; i < _num_args; ++i) {
 		active_arguments.insert(i + 1);
 	}
 
@@ -48,14 +50,14 @@ bool AF::delete_attack(uint32_t attacker, uint32_t victim) {
 	//check that input is valid
 	if (attacker == 0 || victim == 0) return false;
 
-	return attacks.erase(make_pair(attacker, victim)) == 1;
+	return _attacks.erase(make_pair(attacker, victim)) == 1;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {
-	return attacks.count(make_pair(attacker, victim));
+	return _attacks.count(make_pair(attacker, victim));
 }
 
 /*===========================================================================================================================================================*/
@@ -77,11 +79,11 @@ bool AF::exists_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arg
 /*===========================================================================================================================================================*/
 
 void AF::initialize(uint32_t number_args) {
-	num_args = number_args;
-	attackers.resize(static_cast<uint64_t>(num_args) + 1);
-	victims.resize(static_cast<uint64_t>(num_args) + 1);
-	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
-	std::fill(self_attack.begin(), self_attack.end(), 0);
+	_num_args = number_args;
+	_attackers.resize(static_cast<uint64_t>(_num_args) + 1);
+	_victims.resize(static_cast<uint64_t>(_num_args) + 1);
+	_self_attack.resize(static_cast<uint64_t>(_num_args) + 1);
+	std::fill(_self_attack.begin(), _self_attack.end(), 0);
 }
 
 /*===========================================================================================================================================================*/
@@ -89,17 +91,17 @@ void AF::initialize(uint32_t number_args) {
 
 void AF::finish_initilization()
 {
-	attackers.clear();
-	victims.clear();
-	std::fill(self_attack.begin(), self_attack.end(), 0);
+	_attackers.clear();
+	_victims.clear();
+	std::fill(_self_attack.begin(), _self_attack.end(), 0);
 
-	for (const pair<uint32_t, uint32_t> &attack : attacks) {
+	for (const pair<uint32_t, uint32_t> &attack : _attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
-		attackers[target].push_back(source);
-		victims[source].push_back(target);
+		_attackers[target].push_back(source);
+		_victims[source].push_back(target);
 
 		if (source == target)
-			self_attack[source] = true;
+			_self_attack[source] = true;
 	}
 }

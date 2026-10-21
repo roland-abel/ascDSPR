@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <iostream>
 #include <list>
-#include <omp.h>
+#include <span>
+#include <cstddef>
+#include <cassert>
 
 #include "../util/ArrayBitSet.h"
 
@@ -35,29 +37,52 @@ namespace std
 /// This class is responsible for representing the data of an abstract argumentation framework.
 /// </summary>
 class AF {
-
-public:
-
     /// <summary>
     /// Number of arguments in the abstract argumentation framework.
     /// </summary>
-    uint32_t num_args;
+    uint32_t _num_args{};
     /// <summary>
     /// Lists for each argument a list of the arguments, attacking it.
     /// </summary>
-    std::vector<vector<uint32_t>> attackers;
+    std::vector<vector<uint32_t>> _attackers{};
 	/// <summary>
 	/// Lists for each argument a list of the arguments, which are attacked by it.
 	/// </summary>
-	std::vector<vector<uint32_t>> victims;
+	std::vector<vector<uint32_t>> _victims{};
 	/// <summary>
 	/// Booleans indicating if an argument attacks itself.
 	/// </summary>
-	std::vector<uint8_t> self_attack;
+	std::vector<uint8_t> _self_attack{};
     /// <summary>
     /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
     /// </summary>
-    std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
+    std::unordered_set<std::pair<uint32_t, uint32_t>> _attacks{};
+
+public:
+	[[nodiscard]] uint32_t num_args() const noexcept {
+		return _num_args;
+	}
+
+	[[nodiscard]] std::span<const uint32_t> attackers(uint32_t argument) const noexcept {
+		assert(argument <= _num_args);
+		const auto &list = _attackers[argument];
+		return {list.data(), list.size()};
+	}
+
+	[[nodiscard]] const std::unordered_set<std::pair<uint32_t, uint32_t>>& attacks() const noexcept {
+		return _attacks;
+	}
+
+	[[nodiscard]] std::span<const uint32_t> victims(uint32_t argument) const noexcept {
+		assert(argument <= _num_args);
+		const auto &list = _victims[argument];
+		return {list.data(), list.size()};
+	}
+
+	[[nodiscard]] bool self_attack(uint32_t argument) const noexcept {
+		assert(argument <= _num_args);
+		return _self_attack[argument] != 0;
+	}
 
     /// <summary>
     /// Adds an attack to the instance.

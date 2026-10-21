@@ -3,7 +3,7 @@
 
     acceptance_result AlgorithmicShortcut_2::try_solve(AF &framework, uint32_t query_argument)
     {
-        if(framework.attackers[query_argument].empty())
+        if(framework.attackers(query_argument).empty())
         {
             return acceptance_result::accepted;
         } else {

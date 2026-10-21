@@ -11,18 +11,18 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
 	vector<uint32_t> num_attacker;
-	num_attacker.resize(framework.num_args + 1);
+	num_attacker.resize(framework.num_args() + 1);
 	//iterate through active arguments
-	for (std::vector<unsigned int>::size_type i = 1; i < framework.num_args; i++) {
+	for (std::vector<unsigned int>::size_type i = 1; i < framework.num_args(); i++) {
 		uint32_t argument = i;
 		//check if argument is unattacked
-		if (framework.attackers[argument].empty()) {
+		if (framework.attackers(argument).empty()) {
 			// add unattacked argument to list and to output grounded extension
 			ls_unattacked_unprocessed.push_back(argument);
 			grounded_extension.push_back(argument);
 		}
 		// set number of attacker for current argument
-		num_attacker[argument] = framework.attackers[argument].size();
+		num_attacker[argument] = framework.attackers(argument).size();
 	}
 
 	// init variable of current reduct
@@ -40,8 +40,8 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 		}
 
 		//iterate through victims of the unattacked argument
-		for (std::vector<unsigned int>::size_type i = 0; i < framework.victims[ua].size(); i++) {
-			uint32_t vua = framework.victims[ua][i];
+		for (std::vector<unsigned int>::size_type i = 0; i < framework.victims(ua).size(); i++) {
+			uint32_t vua = framework.victims(ua)[i];
 			//only account victims that are still active
 			if (!reduct.contains(vua)) {
 				continue;
@@ -56,8 +56,8 @@ list<uint32_t> Solver_GR::calculate_grounded_extension(AF &framework, uint32_t q
 			}
 
 			//iterate through victims of the victims of unattacked argument
-			for (std::vector<unsigned int>::size_type j = 0; j < framework.victims[vua].size(); j++) {
-				uint32_t vvua = framework.victims[vua][j];
+			for (std::vector<unsigned int>::size_type j = 0; j < framework.victims(vua).size(); j++) {
+				uint32_t vvua = framework.victims(vua)[j];
 				//only account victims of victims that are still active
 				if (!reduct.contains(vvua)) {
 					continue;

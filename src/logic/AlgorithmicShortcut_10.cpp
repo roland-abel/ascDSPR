@@ -53,19 +53,19 @@
     vector<uint32_t> AlgorithmicShortcut_10::get_set_self_defending_arguments(AF &framework)
     {
         vector<uint32_t> set_self_defending_arguments;
-        for (uint32_t i = 0; i < framework.num_args; i++)
+        for (uint32_t i = 0; i < framework.num_args(); i++)
         {
             uint32_t argument = i + 1;
 
             //ensure that self-attacking arguments cannot be self-defending arguments
-            if(framework.self_attack[argument])
+            if(framework.self_attack(argument))
             {
                 continue;
             }
 
-            const vector<uint32_t> &attackers = framework.attackers[argument];
+            const span<const uint32_t> &attackers = framework.attackers(argument);
             bool is_self_defending = true;
-            for (uint32_t j = 0; j < framework.attackers[argument].size(); j++)
+            for (uint32_t j = 0; j < framework.attackers(argument).size(); j++)
             {
                 uint32_t attacker = attackers[j];
                 if (!framework.exists_attack(argument, attacker))
