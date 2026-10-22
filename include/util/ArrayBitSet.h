@@ -85,16 +85,6 @@ public:
         _size = 0;
     }
 
-    using const_iterator = std::vector<uint32_t>::const_iterator;
-
-    [[nodiscard]] const_iterator begin() const {
-        return _array.cbegin();
-    }
-
-    [[nodiscard]] const_iterator end() const {
-        return _array.cbegin() + _size;
-    }
-
 private:
     uint32_t _max_arguments{};
 
